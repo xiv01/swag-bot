@@ -3,8 +3,8 @@ const { CHANNEL_WELCOME } = require('../../cfg.json');
 const { getChannelById } = require('../../util/util.js');
 module.exports = { sendWelcomeMessage };
 
-async function sendWelcomeMessage(member) {
-    const welcomeChannel = await getChannelById(member.guild, CHANNEL_WELCOME)
+async function sendWelcomeMessage(bot, member) {
+    const welcomeChannel = bot.cfgChannels.find(channel => channel.welcome)?.welcome;
     const welcomeEmbed = new EmbedBuilder()
         .setColor('f60051')
         .setAuthor({ name: member.displayName, iconURL: member.user.displayAvatarURL({ dynamic: true })})

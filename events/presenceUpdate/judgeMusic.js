@@ -7,7 +7,7 @@ async function judgeMusic(presence) {
             if(i.name === 'Spotify') {
                 let artist = i.state;
                 let song = i.details;
-                console.log(`@` + presence.userId + ` is listening to ` + artist + ` - ` + song);
+                console.log(`@` + i.userId + ` is listening to ` + artist + ` - ` + song);
                 //await channel.send(`<@${presence.userId}> is listening to ` + artist + ` - ` + song);
             } 
         }

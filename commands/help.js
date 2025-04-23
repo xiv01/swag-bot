@@ -9,6 +9,7 @@ module.exports = {
 		let counter = 1;
 		let string = '';
 		let fields = [];
+		
 		client.commands.forEach(command => {
 			if(command.data.default_member_permissions === '8' || command.data.default_member_permissions === '2' || command.data.default_member_permissions === '4' || command.data.default_member_permissions === '1099511627776') string += '❗ ';
 			string += '**/' + command.data.name + '**\n\`\`\`' + command.data.description + '\`\`\`\n\n';

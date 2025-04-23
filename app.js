@@ -1,4 +1,6 @@
 const { Client, Events, GatewayIntentBits, Partials } = require('discord.js');
+const { setConfig, log } = require('./util/util.js');
+const color = require('./colors.json');
 const { token } = require('./cfg.json');
 
 const { judgeMusic } = require('./events/presenceUpdate/judgeMusic.js');
@@ -8,6 +10,9 @@ const { registerCommands } = require('./events/clientReady/registerCommands.js')
 const { addJoinRole } = require('./events/guildMemberAdd/addJoinRole.js');
 const { checkBlacklist } = require('./events/messageCreate/checkBlacklist.js');
 const { sendWelcomeMessage } = require('./events/guildMemberAdd/sendWelcomeMessage.js');
+const { trackInvite } = require('./events/guildMemberAdd/trackInvite.js');
+
+module.exports = { bot }
 
 const bot = new Client({ intents: 
     [ GatewayIntentBits.Guilds, 
@@ -23,40 +28,45 @@ const bot = new Client({ intents:
     partials: 
     [
     Partials.Message, 
-    Partials.Channel, 
+    Partials.Channel,
     Partials.Reaction,
     Partials.GuildMember
     ], 
-})
+});
 
-bot.once(Events.ClientReady, readyClient => {
-	console.log(`started ${readyClient.user.tag}`);
+bot.once(Events.ClientReady, async readyClient => {
+    await setConfig(bot);
     registerCommands(bot);
-})
+});
 
 bot.on(Events.GuildMemberAdd, async member => {
-    addJoinRole(member);
-    sendWelcomeMessage(member);
-})
+    await addJoinRole(member);
+    await sendWelcomeMessage(bot, member);
+    await trackInvite(bot, member);
+});
+
+bot.on(Events.GuildMemberRemove, async member => {
+    await log(bot, "member", "MEMBER LEFT !!!!", `<@${member.id}> left the server`, color.warning, member);
+});
 
 bot.on(Events.MessageCreate, async message => {
-    checkBlacklist(message);
-})
+    await checkBlacklist(message);
+});
 
 bot.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
     judgeMusic(newPresence);
-})
+});
 
 bot.on(Events.MessageReactionAdd, async (reaction, user) => {
-    selfRoles(reaction, user, false);
-})
+    await selfRoles(reaction, user, false);
+});
 
 bot.on(Events.MessageReactionRemove, async (reaction, user) => {
-    selfRoles(reaction, user, true);
-})
+    await selfRoles(reaction, user, true);
+});
 
 bot.on(Events.InteractionCreate, async interaction => {
     handleInteraction(bot, interaction);
-})
+});
 
 bot.login(token);

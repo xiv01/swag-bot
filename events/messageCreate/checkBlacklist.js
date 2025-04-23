@@ -16,7 +16,8 @@ async function checkBlacklist(message) {
                 .setTitle('❗ **bad words deleted**')
                 .setDescription(message.author.globalName + ` said a bad word >:(`)
 
-            await message.channel.send({ embeds: [badwordsEmbed] });
+            let warning = await message.channel.send({ embeds: [badwordsEmbed] });
+            setTimeout(() => warning.delete().catch(), 8000);
         }
     }
 }
