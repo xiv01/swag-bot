@@ -12,6 +12,7 @@ const { checkBlacklist } = require('./events/messageCreate/checkBlacklist.js');
 const { sendWelcomeMessage } = require('./events/guildMemberAdd/sendWelcomeMessage.js');
 const { trackInvite } = require('./events/guildMemberAdd/trackInvite.js');
 const { logVoiceActivity } = require("./events/voiceStateUpdate/logVoiceActivity");
+const { bumpReminder } = require("./events/messageCreate/bumpReminder");
 
 const bot = new Client({ intents: 
     [ GatewayIntentBits.Guilds, 
@@ -56,6 +57,7 @@ bot.on(Events.GuildMemberRemove, async member => {
 
 bot.on(Events.MessageCreate, async message => {
     await checkBlacklist(message);
+    await bumpReminder(bot, message);
 });
 
 bot.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
