@@ -10,19 +10,19 @@ module.exports = {
 		await interaction.deferReply();
 		await interaction.deleteReply();
 
-		for(i = 0; i < selfroles.length; i++) {
+		for(let i = 0; i < selfroles.length; i++) {
 			let description = selfroles[i].description + '\n';
-			for(j = 0; j < selfroles[i].roles.length; j++) {
+			for(let j = 0; j < selfroles[i].roles.length; j++) {
 				let role = await interaction.guild.roles.cache.find(r => r.name === selfroles[i].roles[j][1])
 				description += '\n' + selfroles[i].roles[j][0] + ` ⇢ ${role}\n`; 
-			};
+			}
 			let embed = new EmbedBuilder()
     			.setColor(selfroles[i].color)
     			.setTitle(selfroles[i].title)
     			.setDescription(description)
 
 			let message = await interaction.channel.send({ embeds: [embed] });
-			for(j = 0; j < selfroles[i].roles.length; j++) await message.react(selfroles[i].roles[j][0]); 
-		};
+			for(let j = 0; j < selfroles[i].roles.length; j++) await message.react(selfroles[i].roles[j][0]);
+		}
 	},
 };

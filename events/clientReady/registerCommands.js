@@ -3,6 +3,7 @@ const path = require('path');
 const { REST } = require('@discordjs/rest');
 const { Collection, Routes } = require('discord.js');
 const { token, clientID } = require('../../cfg.json');
+const { log } = require("../../util/util");
 
 module.exports = { registerCommands };
 
@@ -21,6 +22,12 @@ function registerCommands(bot) {
     }
 
     rest.put(Routes.applicationCommands(clientID), { body: reqBody })
-    	.then(() => console.log('registered commands'))
+    	.then(async() => {
+            await log(bot, {
+                title: "registered commands",
+                message: "DONE !!!",
+            })
+            console.log('registered commands')
+        })
     	.catch(console.error);
 }

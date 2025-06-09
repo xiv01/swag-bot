@@ -71,40 +71,68 @@ async function setConfig(bot) {
         { vclogs: await getChannelByName(bot.guild, 'vc-logs') },
         { welcome: await getChannelByName(bot.guild, 'welcome') }];
 
-    await log(bot, "system", "YEEEESS", "SWAG BOT IS ONLINE !!!")
-    await log(bot, "system", "Config", "systemlogs channel set to <#" + bot.cfgChannels.find(channel => channel.systemlogs)?.systemlogs.id + ">");
-    await log(bot, "system", "Config", "memberlogs channel set to <#" + bot.cfgChannels.find(channel => channel.memberlogs)?.memberlogs.id + ">");
-    await log(bot, "system", "Config", "vclogs channel set to <#" + bot.cfgChannels.find(channel => channel.vclogs)?.vclogs.id + ">");
-    await log(bot, "system", "Config", "welcome channel set to <#" + bot.cfgChannels.find(channel => channel.welcome)?.welcome.id + ">");
+    await log(bot, {
+        title: "YEEEES",
+        message: "swag bot online"
+    });
+    await log(bot, {
+        title: "Config",
+        message: "systemlogs channel set to <#" + bot.cfgChannels.find(channel => channel.systemlogs)?.systemlogs.id + ">"
+    });
+    await log(bot, {
+        title: "Config",
+        message: "memberlogs channel set to <#" + bot.cfgChannels.find(channel => channel.memberlogs)?.memberlogs.id + ">"
+    });
+    await log(bot, {
+        title: "Config",
+        message: "vclogs channel set to <#" + bot.cfgChannels.find(channel => channel.vclogs)?.vclogs.id + ">"
+    });
+    await log(bot, {
+        title: "Config",
+        message: "welcome channel set to <#" + bot.cfgChannels.find(channel => channel.welcome)?.welcome.id + ">"
+    });
 }
 
-async function log(bot, channel, title, message, color = "333333", member = null) {
-    console.log(title + " | " + message);
-    let logEmbed = new EmbedBuilder()
+async function log(bot, options) {
+    const {
+        channel,
+        title = " ",
+        message,
+        color = '333333',
+        member = null
+    } = options;
+
+    console.log(`${title} | ${message}`);
+
+    const logEmbed = new EmbedBuilder()
         .setColor(color)
         .setTitle(title)
         .setDescription(message)
         .setTimestamp();
-    if(member) {
-        logEmbed = new EmbedBuilder()
-            .setColor(color)
-            .setTitle(title)
-            .setDescription(message)
-            .setFooter({ text: `${member.user.username}`, iconURL: member.displayAvatarURL() })
-            .setTimestamp();
+
+    if (member && member.user) {
+        logEmbed.setFooter({
+            text: `${member.user.username}`,
+            iconURL: member.displayAvatarURL()
+        });
+    }
+
+    const channelMap = {
+        system: 'systemlogs',
+        member: 'memberlogs',
+        vc: 'vclogs',
     };
 
-    switch (channel) {
-        case 'system':
-            await bot.cfgChannels.find(channel => channel.systemlogs)?.systemlogs.send({embeds: [logEmbed]});
-            break;
-        case 'member':
-            await bot.cfgChannels.find(channel => channel.memberlogs)?.memberlogs.send({embeds: [logEmbed]});
-            break;
-        case 'vc':
-            await bot.cfgChannels.find(channel => channel.vclogs)?.vclogs.send({embeds: [logEmbed]});
-            break;
-        default:
-            await bot.cfgChannels.find(channel => channel.systemlogs)?.systemlogs.send({embeds: [logEmbed]});
+    const targetChannelName = channelMap[channel] || 'systemlogs';
+    const targetChannelConfig = bot.cfgChannels.find(ch => ch[targetChannelName]);
+
+    if (targetChannelConfig && targetChannelConfig[targetChannelName]) {
+        try {
+            await targetChannelConfig[targetChannelName].send({ embeds: [logEmbed] });
+        } catch (error) {
+            console.error(`failed to send log to '${channel}' channel`, error);
+        }
+    } else {
+        console.warn(`log channel configuration for '${channel}' not found`);
     }
 }

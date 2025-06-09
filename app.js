@@ -11,8 +11,7 @@ const { addJoinRole } = require('./events/guildMemberAdd/addJoinRole.js');
 const { checkBlacklist } = require('./events/messageCreate/checkBlacklist.js');
 const { sendWelcomeMessage } = require('./events/guildMemberAdd/sendWelcomeMessage.js');
 const { trackInvite } = require('./events/guildMemberAdd/trackInvite.js');
-
-module.exports = { bot }
+const { logVoiceActivity } = require("./events/voiceStateUpdate/logVoiceActivity");
 
 const bot = new Client({ intents: 
     [ GatewayIntentBits.Guilds, 
@@ -34,7 +33,7 @@ const bot = new Client({ intents:
     ], 
 });
 
-bot.once(Events.ClientReady, async readyClient => {
+bot.once(Events.ClientReady, async() => {
     await setConfig(bot);
     registerCommands(bot);
 });
@@ -46,7 +45,13 @@ bot.on(Events.GuildMemberAdd, async member => {
 });
 
 bot.on(Events.GuildMemberRemove, async member => {
-    await log(bot, "member", "MEMBER LEFT !!!!", `<@${member.id}> left the server`, color.warning, member);
+    await log(bot, {
+        channel: "member",
+        title: "MEMBER LEFT !!!!",
+        message: `<@${member.id}> left the server`,
+        color: color.warning,
+        member: member
+    });
 });
 
 bot.on(Events.MessageCreate, async message => {
@@ -54,19 +59,23 @@ bot.on(Events.MessageCreate, async message => {
 });
 
 bot.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
-    judgeMusic(newPresence);
+    await judgeMusic(newPresence);
 });
 
 bot.on(Events.MessageReactionAdd, async (reaction, user) => {
-    await selfRoles(reaction, user, false);
+    await selfRoles(bot, reaction, user, false);
 });
 
 bot.on(Events.MessageReactionRemove, async (reaction, user) => {
-    await selfRoles(reaction, user, true);
+    await selfRoles(bot, reaction, user, true);
 });
 
 bot.on(Events.InteractionCreate, async interaction => {
-    handleInteraction(bot, interaction);
+    await handleInteraction(bot, interaction);
+});
+
+bot.on(Events.VoiceStateUpdate, async (oldState, newState) => {
+    await logVoiceActivity(bot, oldState, newState);
 });
 
 bot.login(token);

@@ -10,12 +10,24 @@ async function trackInvite(bot, member) {
         if (inviteUsageAfter > inviteUsageBefore) {
             bot.inviteUsageCounts.set(invite.code, inviteUsageAfter);
             return true;
-        };
+        }
     });
 
     try {
-        log(bot, "member", "MEMBER JOINED !!!!", `<@${member.id}> joined the server\n>>> **invite code:** \`\`${inviteUsed.code} (${inviteUsed.uses})\`\`\n**inviter**: <@${inviteUsed.inviter.id}>`, color.success, member)
+        await log(bot, {
+            channel: "member",
+            title: "MEMBER JOINED !!!!",
+            message: `<@${member.id}> joined the server\n>>> **invite code:** \`\`${inviteUsed.code} (${inviteUsed.uses})\`\`\n**inviter**: <@${inviteUsed.inviter.id}>`,
+            color: color.success,
+            member: member
+        });
     } catch {
-        log(bot, "member", "MEMBER JOINED !!!!", `<@${member.id}> joined the server\n>>> **invite code:** not trackable`, color.success, member)
-    };
+        await log(bot, {
+            channel: "member",
+            title: "MEMBER JOINED !!!!",
+            message: `<@${member.id}> joined the server\n>>> **invite code:** not trackable`,
+            color: color.success,
+            member: member
+        });
+    }
 }
