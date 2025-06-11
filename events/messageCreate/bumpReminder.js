@@ -21,7 +21,7 @@ async function bumpReminder(bot, message) {
 
                 const bumperRole = message.guild.roles.cache.find(role => role.name.includes("bumper"));
                 setTimeout(() => {
-                    message.channel.send({ content: `${bumperRole}`, embeds: [reminderEmbed] });}, 5000);
+                    message.channel.send({ content: `${bumperRole}`, embeds: [reminderEmbed] });}, 7200000);
             }
         }
     }
