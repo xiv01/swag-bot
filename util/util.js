@@ -102,7 +102,8 @@ async function log(bot, options) {
         member = null
     } = options;
 
-    console.log(`${title} | ${message}`);
+    const cleanMessage = typeof message === "string" ? message.replace(/\r?\n/g, " ") : message;
+    console.log(`[${title}] | ${cleanMessage}`);
 
     const logEmbed = new EmbedBuilder()
         .setColor(color)

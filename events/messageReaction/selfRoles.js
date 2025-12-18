@@ -17,12 +17,12 @@ async function selfRoles(bot, reaction, user, type) {
                     let roleName = selfroles[i].roles[j][1];
                     if(type) {
                         await reaction.message.guild.members.fetch(user.id).then(async member => {
-                            await member.roles.remove(await getRoleByName(reaction.message.guild, selfroles[i].roles[j][1]));
                             await log(bot, {
                                 title: "👥 self role removed",
                                 message: `<@${user.id}> removed self role: \`${roleName}\``,
                                 member: member
                             });
+                            await member.roles.remove(await getRoleByName(reaction.message.guild, selfroles[i].roles[j][1]));
                         })
                     } else {
                         await reaction.message.guild.members.fetch(user.id).then(async member => {

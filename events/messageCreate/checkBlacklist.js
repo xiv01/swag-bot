@@ -1,16 +1,26 @@
 const { BLACKLIST } = require('../../cfg.json');
 const color = require('../../colors.json');
 const { EmbedBuilder } = require('discord.js');
+const {log} = require("../../util/util");
 module.exports = { checkBlacklist };
 
-async function checkBlacklist(message) {
+async function checkBlacklist(bot, message) {
     if(message.author.bot) return;
-    var content = message.content.toLowerCase();
+    let content = message.content.toLowerCase();
     if(typeof content == 'undefined') return;
 
     for(badword of BLACKLIST) {
         if(content.includes(badword)) {
             await message.delete();
+
+            await log(bot, {
+                channel: 'systemlogs',
+                title: '❗ bad word deleted',
+                message: `>>> **member**: <@${message.author.id}>\n**message**: ${message.content}\n**channel**: <#${message.channel.id}>`,
+                color: color.warning,
+                member: message.member
+            });
+
             const badwordsEmbed = new EmbedBuilder()
                 .setColor(color.warning)
                 .setTitle('❗ **bad words deleted**')
